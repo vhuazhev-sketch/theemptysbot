@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Telegram Mini App</title>
+
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="title" id="pageTitle">Главная</div>
+    <button class="ghost" id="btnHaptic">Haptic</button>
+  </header>
+
+  <main class="content">
+    <!-- Главная -->
+    <section id="pageHome" class="page active">
+      <h1>Главная</h1>
+      <p>Это Telegram Mini App. Ниже — вкладки.</p>
+
+      <div class="card">
+        <div class="row">
+          <div class="label">initDataUnsafe.user</div>
+          <div class="value" id="userInfo">—</div>
+        </div>
+        <div class="row">
+          <div class="label">Платформа</div>
+          <div class="value" id="platform">—</div>
+        </div>
+        <div class="row">
+          <div class="label">Тема</div>
+          <div class="value" id="theme">—</div>
+        </div>
+      </div>
+
+      <button class="primary" id="btnMain">Показать MainButton</button>
+      <button class="secondary" id="btnAlert">Показать Alert</button>
+    </section>
+
+    <!-- Профиль -->
+    <section id="pageProfile" class="page">
+      <h1>Профиль</h1>
+      <p>Здесь можно вывести данные пользователя, настройки и т.д.</p>
+
+      <div class="card">
+        <div class="row">
+          <div class="label">Имя</div>
+          <div class="value" id="profileName">—</div>
+        </div>
+        <div class="row">
+          <div class="label">Username</div>
+          <div class="value" id="profileUsername">—</div>
+        </div>
+        <div class="row">
+          <div class="label">User ID</div>
+          <div class="value" id="profileId">—</div>
+        </div>
+      </div>
+
+      <button class="secondary" id="btnSendData">Отправить данные боту</button>
+    </section>
+  </main>
+
+  <nav class="bottomnav">
+    <button class="tab active" data-page="home">🏠<span>Главная</span></button>
+    <button class="tab" data-page="profile">👤<span>Профиль</span></button>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
