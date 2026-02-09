@@ -1,75 +1,63 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Telegram Mini App</title>
-
-  <!-- Telegram WebApp SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мини‑приложение: калькулятор, игра и таймер</title>
+    <!-- Подключаем скрипт Telegram WebApp (для использования внутри Telegram) -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="title" id="pageTitle">Главная</div>
-    <button class="ghost" id="btnHaptic">Haptic</button>
-  </header>
+    <header class="topbar">
+        <div class="title" id="pageTitle">Калькулятор</div>
+    </header>
+    <main class="content">
+        <!-- Страница Калькулятор -->
+        <section id="calculatorPage" class="page active">
+            <h1>Калькулятор</h1>
+            <p>Введите выражение и нажмите «Посчитать».</p>
+            <div class="calc">
+                <input type="text" id="calcInput" placeholder="Например: 2+2*3">
+                <button id="calcButton" class="primary">Посчитать</button>
+                <div id="calcResult" class="result"></div>
+            </div>
+        </section>
 
-  <main class="content">
-    <!-- Главная -->
-    <section id="pageHome" class="page active">
-      <h1>Главная</h1>
-      <p>Это Telegram Mini App. Ниже — вкладки.</p>
+        <!-- Страница Игра -->
+        <section id="gamePage" class="page">
+            <h1>Игра: Камень, Ножницы, Бумага</h1>
+            <p>Выберите один из вариантов. Компьютер сделает случайный выбор.</p>
+            <div class="game">
+                <div class="game-buttons">
+                    <button data-choice="rock" class="secondary">Камень</button>
+                    <button data-choice="paper" class="secondary">Бумага</button>
+                    <button data-choice="scissors" class="secondary">Ножницы</button>
+                </div>
+                <div id="gameMessage" class="result">Сделайте выбор</div>
+            </div>
+        </section>
 
-      <div class="card">
-        <div class="row">
-          <div class="label">initDataUnsafe.user</div>
-          <div class="value" id="userInfo">—</div>
-        </div>
-        <div class="row">
-          <div class="label">Платформа</div>
-          <div class="value" id="platform">—</div>
-        </div>
-        <div class="row">
-          <div class="label">Тема</div>
-          <div class="value" id="theme">—</div>
-        </div>
-      </div>
-
-      <button class="primary" id="btnMain">Показать MainButton</button>
-      <button class="secondary" id="btnAlert">Показать Alert</button>
-    </section>
-
-    <!-- Профиль -->
-    <section id="pageProfile" class="page">
-      <h1>Профиль</h1>
-      <p>Здесь можно вывести данные пользователя, настройки и т.д.</p>
-
-      <div class="card">
-        <div class="row">
-          <div class="label">Имя</div>
-          <div class="value" id="profileName">—</div>
-        </div>
-        <div class="row">
-          <div class="label">Username</div>
-          <div class="value" id="profileUsername">—</div>
-        </div>
-        <div class="row">
-          <div class="label">User ID</div>
-          <div class="value" id="profileId">—</div>
-        </div>
-      </div>
-
-      <button class="secondary" id="btnSendData">Отправить данные боту</button>
-    </section>
-  </main>
-
-  <nav class="bottomnav">
-    <button class="tab active" data-page="home">🏠<span>Главная</span></button>
-    <button class="tab" data-page="profile">👤<span>Профиль</span></button>
-  </nav>
-
-  <script src="app.js"></script>
+        <!-- Страница Таймер -->
+        <section id="timerPage" class="page">
+            <h1>Таймер</h1>
+            <p>Простой секундомер: можно запустить, остановить и сбросить.</p>
+            <div class="timer">
+                <div id="timerDisplay" class="timer-display">00:00:00</div>
+                <div class="timer-buttons">
+                    <button id="timerStart" class="primary">Старт</button>
+                    <button id="timerStop" class="secondary">Стоп</button>
+                    <button id="timerReset" class="secondary">Сброс</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Нижняя навигация -->
+    <nav class="bottomnav">
+        <button class="tab active" data-page="calculatorPage">🧮<span>Калькулятор</span></button>
+        <button class="tab" data-page="gamePage">🎮<span>Игра</span></button>
+        <button class="tab" data-page="timerPage">⏱<span>Таймер</span></button>
+    </nav>
+    <script src="app.js"></script>
 </body>
 </html>

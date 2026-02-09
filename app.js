@@ -1,103 +1,135 @@
+// Мини‑приложение с тремя вкладками: калькулятор, игра и таймер
 (function () {
-  const tg = window.Telegram?.WebApp;
-  const isTg = !!tg;
-
-  const el = (id) => document.getElementById(id);
-
+  // Навигация между страницами
   const pages = {
-    home: el("pageHome"),
-    profile: el("pageProfile"),
+    calculatorPage: document.getElementById('calculatorPage'),
+    gamePage: document.getElementById('gamePage'),
+    timerPage: document.getElementById('timerPage')
   };
+  const pageTitle = document.getElementById('pageTitle');
 
-  function setActivePage(page) {
-    Object.values(pages).forEach((p) => p.classList.remove("active"));
-    pages[page].classList.add("active");
-
-    el("pageTitle").textContent = page === "home" ? "Главная" : "Профиль";
-
-    document.querySelectorAll(".tab").forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.page === page);
+  function setActivePage(pageId) {
+    // Скрываем все страницы
+    Object.values(pages).forEach(page => page.classList.remove('active'));
+    // Показываем выбранную страницу
+    pages[pageId].classList.add('active');
+    // Изменяем заголовок
+    if (pageId === 'calculatorPage') pageTitle.textContent = 'Калькулятор';
+    else if (pageId === 'gamePage') pageTitle.textContent = 'Игра';
+    else if (pageId === 'timerPage') pageTitle.textContent = 'Таймер';
+    // Подсветка табов
+    document.querySelectorAll('.tab').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.page === pageId);
     });
+  }
 
-    if (isTg && page !== "home") {
-      tg.MainButton.hide();
+  // Навешиваем обработчики на навигационные кнопки
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => setActivePage(btn.dataset.page));
+  });
+
+  // Калькулятор
+  const calcInput = document.getElementById('calcInput');
+  const calcButton = document.getElementById('calcButton');
+  const calcResult = document.getElementById('calcResult');
+
+  calcButton.addEventListener('click', () => {
+    const expr = calcInput.value;
+    let result;
+    try {
+      // Используем Function вместо eval для безопасности
+      // Но всё равно расчёт выражения от пользователя следует использовать с осторожностью
+      result = new Function('return ' + expr)();
+      if (isNaN(result)) {
+        calcResult.textContent = 'Некорректное выражение';
+      } else {
+        calcResult.textContent = 'Результат: ' + result;
+      }
+    } catch (e) {
+      calcResult.textContent = 'Ошибка: ' + e.message;
+    }
+  });
+
+  // Игра камень-ножницы-бумага
+  const gameMessage = document.getElementById('gameMessage');
+  const gameButtons = document.querySelectorAll('.game-buttons button');
+
+  function playGame(playerChoice) {
+    const choices = ['rock', 'paper', 'scissors'];
+    const computerChoice = choices[Math.floor(Math.random() * choices.length)];
+    let outcome;
+    if (playerChoice === computerChoice) {
+      outcome = 'Ничья!';
+    } else if (
+      (playerChoice === 'rock' && computerChoice === 'scissors') ||
+      (playerChoice === 'scissors' && computerChoice === 'paper') ||
+      (playerChoice === 'paper' && computerChoice === 'rock')
+    ) {
+      outcome = 'Вы выиграли!';
+    } else {
+      outcome = 'Вы проиграли!';
+    }
+    gameMessage.textContent =
+      'Вы выбрали: ' + translateChoice(playerChoice) + '\nКомпьютер выбрал: ' + translateChoice(computerChoice) + '\n' + outcome;
+  }
+
+  function translateChoice(choice) {
+    switch (choice) {
+      case 'rock': return 'Камень';
+      case 'paper': return 'Бумага';
+      case 'scissors': return 'Ножницы';
+      default: return choice;
     }
   }
 
-  document.querySelectorAll(".tab").forEach((btn) => {
-    btn.addEventListener("click", () => setActivePage(btn.dataset.page));
+  gameButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const choice = btn.dataset.choice;
+      playGame(choice);
+    });
   });
 
-  if (isTg) {
-    tg.ready();
-    tg.expand();
+  // Таймер (секундомер)
+  const timerDisplay = document.getElementById('timerDisplay');
+  const timerStart = document.getElementById('timerStart');
+  const timerStop = document.getElementById('timerStop');
+  const timerReset = document.getElementById('timerReset');
 
-    const applyTheme = () => {
-      const t = tg.themeParams || {};
-      if (t.bg_color) document.documentElement.style.setProperty("--bg", t.bg_color);
-      if (t.text_color) document.documentElement.style.setProperty("--text", t.text_color);
-      if (t.hint_color) document.documentElement.style.setProperty("--muted", t.hint_color);
-      if (t.button_color) document.documentElement.style.setProperty("--accent", t.button_color);
-    };
+  let timerInterval = null;
+  let elapsedTime = 0;
 
-    applyTheme();
-    tg.onEvent("themeChanged", applyTheme);
-
-    const user = tg.initDataUnsafe?.user;
-
-    el("userInfo").textContent = user
-      ? `${user.first_name}${user.last_name ? " " + user.last_name : ""}`
-      : "Нет данных (открыто не из Telegram?)";
-
-    el("platform").textContent = tg.platform || "—";
-    el("theme").textContent = tg.colorScheme || "—";
-
-    el("profileName").textContent = user
-      ? `${user.first_name}${user.last_name ? " " + user.last_name : ""}`
-      : "—";
-
-    el("profileUsername").textContent = user?.username ? "@" + user.username : "—";
-    el("profileId").textContent = user?.id ? String(user.id) : "—";
-
-    el("btnHaptic").addEventListener("click", () => {
-      tg.HapticFeedback?.impactOccurred("light");
-    });
-
-    el("btnAlert").addEventListener("click", () => {
-      tg.showAlert("Привет! Это showAlert из Telegram WebApp 🙂");
-    });
-
-    el("btnMain").addEventListener("click", () => {
-      tg.MainButton.setText("Отправить действие");
-      tg.MainButton.show();
-    });
-
-    tg.onEvent("mainButtonClicked", () => {
-      const payload = { action: "main_button_clicked", ts: Date.now() };
-      tg.sendData(JSON.stringify(payload));
-      tg.MainButton.hide();
-      tg.HapticFeedback?.notificationOccurred("success");
-    });
-
-    el("btnSendData").addEventListener("click", () => {
-      const payload = { action: "from_profile", user: tg.initDataUnsafe?.user || null };
-      tg.sendData(JSON.stringify(payload));
-      tg.HapticFeedback?.notificationOccurred("success");
-    });
-  } else {
-    el("userInfo").textContent = "Открой в Telegram, чтобы увидеть user";
-    el("platform").textContent = "browser";
-    el("theme").textContent = "—";
-
-    el("profileName").textContent = "—";
-    el("profileUsername").textContent = "—";
-    el("profileId").textContent = "—";
-
-    el("btnHaptic").style.display = "none";
-    el("btnAlert").addEventListener("click", () => alert("Открой в Telegram, чтобы работало tg.showAlert"));
-    el("btnMain").addEventListener("click", () => alert("MainButton доступен только в Telegram"));
-    el("btnSendData").addEventListener("click", () => alert("sendData работает только в Telegram"));
+  function updateTimerDisplay() {
+    const seconds = Math.floor(elapsedTime / 1000) % 60;
+    const minutes = Math.floor(elapsedTime / (1000 * 60)) % 60;
+    const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+    const format = n => (n < 10 ? '0' + n : n);
+    timerDisplay.textContent = `${format(hours)}:${format(minutes)}:${format(seconds)}`;
   }
 
-  setActivePage("home");
+  timerStart.addEventListener('click', () => {
+    if (timerInterval) return; // уже запущен
+    const startTime = Date.now() - elapsedTime;
+    timerInterval = setInterval(() => {
+      elapsedTime = Date.now() - startTime;
+      updateTimerDisplay();
+    }, 200);
+  });
+
+  timerStop.addEventListener('click', () => {
+    if (!timerInterval) return;
+    clearInterval(timerInterval);
+    timerInterval = null;
+  });
+
+  timerReset.addEventListener('click', () => {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    elapsedTime = 0;
+    updateTimerDisplay();
+  });
+
+  // Инициализация
+  updateTimerDisplay();
+  // По умолчанию показываем первую страницу
+  setActivePage('calculatorPage');
 })();
